@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mailflare Setup Guide | Unnati Tripathi</title>
+<meta name="description" content="Step-by-step guide to setting up Mailflare on Cloudflare: email on your own domain, calendar, booking link and file storage.">
+<meta property="og:title" content="Mailflare setup guide: your own @yourbrand.com email">
+<meta property="og:description" content="Step-by-step guide to Mailflare: custom domain email, calendar, booking link and drive on your own Cloudflare account. By Unnati Tripathi.">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8E7;
+    --cream-2:#FBF3DF;
+    --red:#D12E2E;
+    --red-dark:#B02323;
+    --ink:#1F1F1F;
+    --body:#3B3B3B;
+    --muted:#6B6B6B;
+    --sage:#8B9A78;
+    --sage-bg:#F3F0DD;
+    --pink-bg:#FCEBDD;
+    --line:#E7DFCB;
+    --code-bg:#1F1F1F;
+    --code-ink:#FFF3DA;
+    --display:'Anton', 'Impact', 'Arial Narrow Bold', sans-serif;
+    --sans:'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--cream);color:var(--body);font-family:var(--sans);font-size:18px;line-height:1.7;overflow-x:hidden}
+  a{color:var(--red)}
+  img{max-width:100%;display:block}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+
+  /* ---------- Header ---------- */
+  header.site{background:var(--cream);border-bottom:2px solid var(--line);position:sticky;top:0;z-index:20}
+  header.site .wrap{padding-top:22px;padding-bottom:18px;text-align:center}
+  .brand{font-family:var(--display);color:var(--red);font-size:clamp(28px,6vw,40px);letter-spacing:.04em;text-decoration:none;line-height:1.1;display:inline-block}
+  nav.top{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 36px;margin-top:12px}
+  nav.top a{color:#555;text-decoration:none;font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+  nav.top a:hover{color:var(--ink)}
+  nav.top a.on{color:var(--ink)}
+
+  /* ---------- Hero ---------- */
+  .hero{background:var(--red);color:#FFE9E4;padding:72px 0 80px}
+  .byline{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;font-size:17px;color:#FFE1DB}
+  .byline strong{font-weight:600;color:#FFEDE9}
+  .pill{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.16);padding:7px 16px;font-family:var(--display);letter-spacing:.14em;font-size:15px;color:#F8C7C1;text-decoration:none;transition:background .15s}
+  .pill:hover{background:rgba(255,255,255,.26)}
+  .pill svg{width:20px;height:20px;flex:none}
+  .role{margin-top:8px;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#FFD3CC;font-weight:600}
+  .tag{display:inline-block;background:var(--cream);color:var(--red);font-family:var(--display);letter-spacing:.14em;font-size:17px;padding:8px 22px;margin:30px 0 22px}
+  .hero h1{font-family:var(--display);font-weight:400;color:#FFFDF8;font-size:clamp(46px,10vw,84px);line-height:1.04;margin:0 0 26px;text-transform:uppercase;letter-spacing:.005em}
+  .hero p.lede{font-size:clamp(19px,2.6vw,23px);line-height:1.65;color:#FFE6E1;margin:0;max-width:700px}
+
+  /* ---------- Callouts ---------- */
+  section{padding:56px 0}
+  .callout{border-left:6px solid var(--red);background:var(--pink-bg);padding:26px 30px;font-size:19px}
+  .callout b{color:var(--ink)}
+  .callout.sage{border-color:var(--sage);background:var(--sage-bg)}
+  .eyebrow{font-family:var(--display);letter-spacing:.16em;font-size:15px;text-transform:uppercase;color:var(--red);margin:0 0 10px}
+  .callout.sage .eyebrow{color:var(--sage)}
+  .callout p{margin:0 0 12px}
+  .callout p:last-child{margin-bottom:0}
+
+  h2{font-family:var(--display);font-weight:400;color:var(--ink);text-transform:uppercase;font-size:clamp(34px,6vw,50px);line-height:1.08;margin:0 0 18px}
+  h3{font-family:var(--display);font-weight:400;color:var(--ink);text-transform:uppercase;font-size:clamp(24px,4vw,30px);line-height:1.15;margin:0 0 12px;letter-spacing:.01em}
+  p{margin:0 0 18px}
+
+  /* ---------- Features ---------- */
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:28px}
+  .feature{background:#FFFDF6;border:2px solid var(--line);padding:22px 22px 18px}
+  .feature .eyebrow{font-size:14px;margin-bottom:6px}
+  .feature p{font-size:16px;margin:0;line-height:1.6}
+
+  .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+  .shots figure{margin:0;background:#FFFDF6;border:2px solid var(--line);padding:8px}
+  .shots img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top left;background:var(--cream-2)}
+  .shots figcaption{font-family:var(--display);letter-spacing:.12em;font-size:13px;color:var(--muted);text-transform:uppercase;padding-top:8px;text-align:center}
+
+  /* ---------- Checklist ---------- */
+  ul.check{list-style:none;padding:0;margin:20px 0 0}
+  ul.check li{position:relative;padding:0 0 14px 40px}
+  ul.check li::before{content:"";position:absolute;left:0;top:5px;width:22px;height:22px;background:var(--red);
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat;
+            mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat}
+  ul.check b{color:var(--ink)}
+
+  /* ---------- Steps ---------- */
+  .steps-head{background:var(--red);padding:64px 0 40px}
+  .steps-head h2{color:#FFFDF8}
+  .steps-head p{color:#FFE6E1;font-size:19px;margin:0}
+  .steps-head .eyebrow{color:#FFD3CC}
+  .steps{background:var(--red);padding:0 0 72px}
+  .step{background:var(--cream);padding:40px 40px 34px;margin-bottom:28px;position:relative}
+  .step:last-child{margin-bottom:0}
+  .step-num{font-family:var(--display);color:var(--red);letter-spacing:.16em;font-size:15px;margin:0 0 8px}
+  .step ol,.step ul{padding-left:24px;margin:0 0 18px}
+  .step li{margin-bottom:8px}
+  .step li::marker{color:var(--red);font-weight:700}
+  .step .note{border-left:5px solid var(--sage);background:var(--sage-bg);padding:14px 18px;font-size:16px;margin:18px 0 0}
+  .step .warn{border-left:5px solid var(--red);background:var(--pink-bg);padding:14px 18px;font-size:16px;margin:18px 0 0}
+  .step .note b,.step .warn b{color:var(--ink)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:#F1E8D2;color:var(--ink);padding:2px 7px;border-radius:2px;word-break:break-word}
+  .perm{display:grid;grid-template-columns:1fr;gap:12px;margin:8px 0 18px}
+  .perm div{background:#FFFDF6;border:2px solid var(--line);padding:16px 18px;font-size:16px}
+  .perm .eyebrow{font-size:13px;margin-bottom:6px}
+  .perm ul{margin:0;padding-left:20px}
+  .perm li{margin-bottom:4px}
+
+  .btn{display:inline-block;background:var(--red);color:#FFFDF8;text-decoration:none;font-family:var(--display);letter-spacing:.12em;font-size:clamp(17px,2.6vw,21px);padding:18px 32px;line-height:1.2;transition:background .15s;border:0;cursor:pointer}
+  .btn:hover{background:var(--red-dark)}
+  .btn.ghost{background:transparent;color:var(--red);border:2px solid var(--red);padding:12px 22px;font-size:16px}
+  .btn.ghost:hover{background:var(--red);color:#FFFDF8}
+
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:6px 0 4px}
+  .opt{border:2px solid var(--line);background:#FFFDF6;padding:18px 20px;font-size:16px}
+  .opt h4{font-family:var(--display);font-weight:400;letter-spacing:.06em;color:var(--ink);font-size:20px;margin:0 0 4px;text-transform:uppercase}
+  .opt .price{font-family:var(--display);color:var(--red);letter-spacing:.1em;font-size:14px;margin-bottom:10px}
+  .opt ol{padding-left:20px;margin:0}
+
+  /* ---------- Prompt block ---------- */
+  .prompt{position:relative;background:var(--code-bg);color:var(--code-ink);padding:22px 22px 20px;margin:18px 0 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.65;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+  .copy{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;border:0;font-family:var(--display);letter-spacing:.12em;font-size:13px;padding:7px 12px;cursor:pointer}
+  .copy:hover{background:var(--red-dark)}
+  .prompt-body{display:block;padding-top:28px}
+
+  /* ---------- FAQ ---------- */
+  details{border-bottom:2px solid var(--line);padding:18px 0}
+  details:first-of-type{border-top:2px solid var(--line)}
+  summary{cursor:pointer;list-style:none;font-family:var(--display);color:var(--ink);font-size:21px;letter-spacing:.03em;text-transform:uppercase;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;line-height:1.3}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--red);font-size:28px;line-height:1;flex:none}
+  details[open] summary::after{content:"–"}
+  details .ans{padding-top:12px;font-size:17px}
+  details .ans p:last-child{margin-bottom:0}
+
+  /* ---------- Cards (bottom) ---------- */
+  .cards{background:var(--red);padding:64px 0 72px}
+  .card{background:var(--cream);padding:44px 44px 46px;margin-bottom:32px}
+  .card:last-child{margin-bottom:0}
+  .card h2{font-size:clamp(32px,5.4vw,46px)}
+  .card p{font-size:19px}
+
+  footer{padding:46px 0 56px;text-align:center;color:#8A8A8A;font-size:16px;line-height:1.7}
+  footer .who{color:#6E6E6E;font-weight:600}
+  footer .fine{font-size:13px;color:#9A9A9A;max-width:560px;margin:14px auto 0}
+
+  @media (max-width:640px){
+    body{font-size:17px}
+    .wrap{padding:0 18px}
+    header.site{position:static}
+    nav.top{gap:6px 22px}
+    nav.top a{font-size:13px}
+    .hero{padding:52px 0 60px}
+    .step{padding:28px 22px 24px}
+    .card{padding:32px 24px 34px}
+    .callout{padding:22px 20px;font-size:17px}
+    .shots{grid-template-columns:1fr 1fr}
+    .btn{display:block;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top">UNNATI TRIPATHI</a>
+    <nav class="top" aria-label="Sections">
+      <a href="https://github.com/hieunc229/mailflare" target="_blank" rel="noopener" class="on">GitHub Repo</a>
+      <a href="#setup">Setup Guide</a>
+      <a href="#use">Use It</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="byline">
+      <span>A guide by <strong>Unnati Tripathi</strong></span>
+      <a class="pill" href="https://www.instagram.com/unnati_23/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        INSTAGRAM
+      </a>
+    </div>
+    <div class="role">CEO &amp; Co-founder, Master Labs</div>
+
+    <div class="tag">CUSTOM DOMAIN EMAIL</div>
+    <h1>Set up your own @yourbrand.com email</h1>
+    <p class="lede">Mailflare is an open-source GitHub repo that gives you an address like <b style="color:#fff">hello@yourbrand.com</b>. You deploy it on your own Cloudflare account, connect your domain and create your first mailbox. It also gives you a calendar, a booking link and your own file drive.</p>
+  </div>
+</section>
+
+<!-- SOURCE -->
+<section style="padding-bottom:0">
+  <div class="wrap">
+    <div class="callout">
+      <b>Source:</b> <a href="https://github.com/hieunc229/mailflare" target="_blank" rel="noopener">Get Mailflare on GitHub →</a>
+      <div style="font-size:15px;color:var(--muted);margin-top:6px">github.com/hieunc229/mailflare</div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE YOU START -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="eyebrow">Before you start</p>
+    <h2>What you need</h2>
+    <ul class="check">
+      <li><b>A Cloudflare account.</b> Sign up at <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a>.</li>
+      <li><b>A domain you own</b> (like yourbrand.com) that uses Cloudflare DNS. If you bought it on GoDaddy, Namecheap or Hostinger, Step 0 shows how to move its DNS to Cloudflare. It stays registered where it is.</li>
+      <li><b>A way to send email:</b> a Resend account, or Cloudflare's own Email Sending (Step 5).</li>
+      <li><b>About 20–30 minutes.</b> You won't need to write any code.</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- STEPS -->
+<div id="setup" class="steps-head">
+  <div class="wrap">
+    <p class="eyebrow">Step-by-step</p>
+    <h2>How to set it up</h2>
+    <p>Do these steps in order. Every one of them is done in your web browser.</p>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="wrap">
+
+    <div class="step">
+      <p class="step-num">STEP 0 · ONLY IF YOUR DOMAIN ISN'T ON CLOUDFLARE YET</p>
+      <h3>Move your domain's DNS to Cloudflare</h3>
+      <ol>
+        <li>In Cloudflare, click <b>Add a domain</b> (also called "Add site"), type your domain and pick a plan.</li>
+        <li>Cloudflare shows you two <b>nameservers</b>. Copy them.</li>
+        <li>Log in where you bought the domain (GoDaddy, Namecheap and so on), find <b>Nameservers</b> and replace the existing ones with Cloudflare's two.</li>
+        <li>Wait until Cloudflare says the domain is <b>Active</b>. This often takes minutes but can take a few hours.</li>
+      </ol>
+      <div class="note"><b>Important:</b> use the <b>same Cloudflare account</b> for your domain and for Mailflare.</div>
+    </div>
+
+    <div class="step">
+      <p class="step-num">STEP 1</p>
+      <h3>Create your Cloudflare API token (CF_TOKEN)</h3>
+      <p>Mailflare uses this token to set up email for your domain. You need it before you deploy.</p>
+      <ol>
+        <li>In the Cloudflare dashboard go to <b>Manage Account → Account API Tokens → Create Token</b> and choose a custom token.</li>
+        <li>Add a policy for your domain (choose <b>Specified Domains</b> and pick yours) with these permissions:</li>
+      </ol>
+      <div class="perm">
+        <div>
+          <p class="eyebrow">Policy 1 · Your domain(s)</p>
+          <ul>
+            <li>DNS &amp; Zones → <b>DNS</b> → Edit</li>
+            <li>DNS &amp; Zones → <b>Zone</b> → Read</li>
+            <li>DNS &amp; Zones → <b>Zone Settings</b> → Edit</li>
+            <li>Email &amp; Messaging → <b>Email Routing Rules</b> → Edit</li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Policy 2 · Entire account (only if Cloudflare will send your mail)</p>
+          <ul>
+            <li>Email &amp; Messaging → <b>Email Sending</b> → Edit</li>
+          </ul>
+        </div>
+      </div>
+      <ol start="3">
+        <li>Create the token and <b>copy the secret right away</b>. Cloudflare only shows it once. Paste it into your notes for now.</li>
+      </ol>
+      <div class="warn"><b>Common mistake:</b> paste only the token's secret. Don't use the token ID, and don't put the word <code>Bearer</code> in front of it.</div>
+    </div>
+
+    <div class="step">
+      <p class="step-num">STEP 2</p>
+      <h3>Deploy Mailflare to Cloudflare</h3>
+      <p>This is the one-click part.</p>
+      <p><a class="btn" href="https://deploy.workers.cloudflare.com/?url=https://github.com/hieunc229/mailflare" target="_blank" rel="noopener">DEPLOY TO CLOUDFLARE →</a></p>
+      <ol>
+        <li>Click the button above and sign in to Cloudflare.</li>
+        <li>Choose the Cloudflare account that owns your domain.</li>
+        <li>Keep the app name exactly <code>mailflare</code>. <b>Don't rename it</b>, or receiving email will break.</li>
+        <li>When it asks for variables or secrets, add <code>CF_TOKEN</code> and paste the token from Step 1.</li>
+        <li>Start the deployment and wait for Cloudflare to finish. It creates the database, storage and queues for you.</li>
+      </ol>
+      <div class="note"><b>Prefer an AI agent?</b> There's a copy-paste prompt for Claude Code or Cursor <a href="#agent">further down</a>.</div>
+    </div>
+
+    <div class="step">
+      <p class="step-num">STEP 3</p>
+      <h3>Create your admin account</h3>
+      <ol>
+        <li>Open the URL of your new <code>mailflare</code> app. Cloudflare shows it when deployment finishes, and it looks like <code>mailflare.your-name.workers.dev</code>.</li>
+        <li>If you don't land on the setup page automatically, add <code>/setup</code> to the end of the URL.</li>
+        <li>Mailflare checks your Cloudflare settings and prepares the database for you.</li>
+        <li>Create your <b>admin account</b> with a strong password. This is the login you'll use from now on.</li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <p class="step-num">STEP 4</p>
+      <h3>Connect your domain &amp; create your first mailbox</h3>
+      <ol>
+        <li>Type your domain (for example <code>yourbrand.com</code>).</li>
+        <li>Pick <b>Cloudflare</b> as the service that receives mail. Mailflare turns on Email Routing and adds the DNS records itself.</li>
+        <li>Choose your first address, for example <b>hello@yourbrand.com</b>, and finish.</li>
+        <li>Send a test email to it from your personal Gmail. It should show up in your Mailflare inbox.</li>
+      </ol>
+      <div class="warn"><b>Already have email on this domain?</b> If Google, Zoho or another provider already handles mail for this domain, Mailflare will ask before it replaces their MX records. Once you confirm, your <b>old provider stops receiving mail</b> for that domain.</div>
+    </div>
+
+    <div class="step">
+      <p class="step-num">STEP 5</p>
+      <h3>Turn on sending</h3>
+      <p>Receiving works now. To send and reply from your new address, pick <b>one</b> option:</p>
+      <div class="options">
+        <div class="opt">
+          <h4>Resend</h4>
+          <ol>
+            <li>Sign up at <a href="https://resend.com" target="_blank" rel="noopener">resend.com</a> and create a <b>full-access</b> API key.</li>
+            <li>In Mailflare, open <b>Admin → Domains</b> and expand your domain.</li>
+            <li>Under <b>Setup sending email</b>, switch on <b>Resend</b>, paste the key and click <b>Setup</b>.</li>
+            <li>Wait a few minutes, then click <b>Check status</b> until it's verified.</li>
+          </ol>
+        </div>
+        <div class="opt">
+          <h4>Cloudflare</h4>
+          <ol>
+            <li>Go to <b>Compute → Email Service → Email Sending</b>, click <b>Onboard domain</b> and follow the prompts.</li>
+            <li>Make sure your token has the <b>Email Sending</b> permission from Step 1.</li>
+            <li>In Mailflare, open <b>Admin → Domains</b>, expand your domain and set up DKIM &amp; DMARC.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="note"><b>Test it:</b> reply to the test email from Step 4. If it reaches your Gmail, you're done. 🎉</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- USE IT -->
+<section id="use">
+  <div class="wrap">
+    <p class="eyebrow">Now use it</p>
+    <h2>Everything else you get</h2>
+
+    <h3 style="margin-top:30px">More email addresses</h3>
+    <p>Create as many addresses as you need (support@, sales@, your own name@) from the admin area. Each one can be personal or <b>shared</b> with your team, and they all show up in one inbox. You can also set <b>routing rules</b> to store, forward, reject or sort incoming mail. To add another domain later, open <b>Admin → Domains → New domain</b>.</p>
+
+    <h3 style="margin-top:30px">Calendar</h3>
+    <p>Create events, including repeating ones, with proper time zones. Anyone you add as an attendee gets an email invitation from your own domain.</p>
+
+    <h3 style="margin-top:30px">Booking link</h3>
+    <p>Share one public link (in your Instagram bio, email signature or DMs) so people can book an open slot on your calendar.</p>
+
+    <h3 style="margin-top:30px">Drive</h3>
+    <p>Upload files and share them with clients. Everything is stored in your own Cloudflare storage.</p>
+
+    <h3 style="margin-top:30px">AI email assistant</h3>
+    <p>Open <b>Assistant → Settings</b> for a mailbox and turn it on. It can search your mail, draft replies and manage events. Drafts wait for you to review them, so nothing is sent without your OK.</p>
+
+    <h3 style="margin-top:30px">Moving from Gmail?</h3>
+    <p>Mailflare can import old mail over IMAP, from a Gmail Takeout export, or from <code>.eml</code> and <code>.mbox</code> files.</p>
+  </div>
+</section>
+
+<!-- AGENT PROMPT -->
+<section id="agent" style="padding-top:0">
+  <div class="wrap">
+    <div class="callout sage">
+      <p class="eyebrow">Shortcut</p>
+      <p><b>Install it with an AI agent.</b> If you use Claude Code, Codex or Cursor, paste the prompt below and the agent handles Steps 1–2 for you. It will ask for your Cloudflare account ID and two API tokens. Enter them through the agent's secret input, and never paste them in a public chat.</p>
+      <div class="prompt"><button class="copy" type="button" data-copy="agent-prompt">COPY</button><span class="prompt-body" id="agent-prompt">Install Mailflare for me from https://github.com/hieunc229/mailflare on my Cloudflare account.
+
+1. Read README.md, docs/deployment.md and wrangler.jsonc first.
+2. Ask me for my Cloudflare account ID and two API tokens, using a secret input:
+   a deploy token (for Wrangler) and a runtime token (the Worker secret CF_TOKEN).
+   Never print them, commit them, or pass them as command arguments.
+3. Keep the Worker name exactly "mailflare". Create or reuse the D1 database
+   "mailflare", the R2 bucket "mailflare-raw", and the queues "mailflare-inbound",
+   "mailflare-outbound" and "mailflare-agent".
+4. Install dependencies, run `npm run deploy`, and set CF_TOKEN as a Worker secret.
+   Do not run remote database migrations yourself. The /setup page does that.
+5. Give me the app URL and anything I still need to do. I will open /setup, create
+   the admin account and connect my domain.</span></div>
+      <p style="font-size:14px;color:var(--muted);margin-top:12px">Prompt from the Mailflare README. For the token permissions, see the <a href="https://github.com/hieunc229/mailflare/blob/main/docs/deployment.md#deploy-with-an-ai-coding-agent" target="_blank" rel="noopener">deployment guide</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap">
+    <p class="eyebrow">Stuck?</p>
+    <h2>FAQ &amp; fixes</h2>
+
+
+    <details>
+      <summary>Error 9109: "Invalid access token"</summary>
+      <div class="ans">
+        <p>The Deploy button's own token is not the same thing as <code>CF_TOKEN</code>. You need the separate token from Step 1. Check that:</p>
+        <ul class="check" style="margin-top:8px">
+          <li>You pasted the token <b>secret</b>, not the token ID.</li>
+          <li>There's no <code>Bearer</code> in front of it.</li>
+          <li>You redeployed after changing any variables or secrets.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Error 2008 or "MX records for another mail service"</summary>
+      <div class="ans"><p>Your domain already points its mail at another provider. Only one service can receive mail for a domain. Mailflare asks before it replaces those records, and once you confirm, the old provider stops getting mail. Your token needs the <b>DNS → Edit</b> permission to do this.</p></div>
+    </details>
+
+    <details>
+      <summary>Error 10000 on Email Routing</summary>
+      <div class="ans"><p>Your token is missing permissions. Go back to Step 1 and make sure it has DNS Edit, Zone Read, Zone Settings Edit and Email Routing Rules Edit for your domain.</p></div>
+    </details>
+
+    <details>
+      <summary>Emails aren't arriving</summary>
+      <div class="ans">
+        <ul class="check">
+          <li>The app is named exactly <code>mailflare</code> in Cloudflare.</li>
+          <li>Email Routing is turned on for your domain in Cloudflare.</li>
+          <li>The mailbox has an Email Routing rule that points to the mailflare Worker.</li>
+          <li>Your domain and Mailflare are on the <b>same</b> Cloudflare account.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>My domain is on GoDaddy / Namecheap. Will it work?</summary>
+      <div class="ans"><p>Yes. Keep the domain where you bought it and just switch its nameservers to Cloudflare (Step 0). The domain stays registered where it is.</p></div>
+    </details>
+
+    <details>
+      <summary>Where can I get more help?</summary>
+      <div class="ans"><p>The repo has a full <a href="https://github.com/hieunc229/mailflare/blob/main/docs/troubleshooting.md" target="_blank" rel="noopener">troubleshooting guide</a> and an <a href="https://github.com/hieunc229/mailflare/issues" target="_blank" rel="noopener">issues page</a> where you can ask questions.</p></div>
+    </details>
+  </div>
+</section>
+
+<!-- BOTTOM CARDS -->
+<section class="cards">
+  <div class="wrap">
+    <div class="card">
+      <p class="eyebrow">Get the repo</p>
+      <h2>Mailflare on GitHub</h2>
+      <p>Open the repo, star it, and deploy it to your own Cloudflare account.</p>
+      <a class="btn" href="https://github.com/hieunc229/mailflare" target="_blank" rel="noopener">OPEN THE GITHUB REPO →</a>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Follow for more</p>
+      <h2>More AI tools like this</h2>
+      <p>I share open-source AI tools and the guides to set them up. Follow me on Instagram so you don't miss the next one.</p>
+      <a class="btn" href="https://www.instagram.com/unnati_23/" target="_blank" rel="noopener">FOLLOW @UNNATI_23 →</a>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">About me</p>
+      <h2>Unnati Tripathi</h2>
+      <p style="font-family:var(--display);letter-spacing:.12em;color:var(--red);font-size:18px;margin-bottom:14px">CEO &amp; CO-FOUNDER, MASTER LABS</p>
+      <p>I build with AI and share the tools and workflows that actually save time and money, so you can build too.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="who">Unnati Tripathi · CEO &amp; Co-founder, Master Labs</div>
+    <div><a href="https://www.instagram.com/unnati_23/" target="_blank" rel="noopener" style="color:#8A8A8A">Instagram @unnati_23</a></div>
+    <div>© 2026 Unnati Tripathi. All rights reserved.</div>
+    <p class="fine">Mailflare is an independent open-source project by its own maintainers (AGPL-3.0). This guide is not affiliated with Mailflare, Cloudflare or Resend. Dashboard menus can change, so check the official docs if something looks different.</p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      var text = el ? el.innerText : '';
+      var done = function () { btn.textContent = 'COPIED ✓'; setTimeout(function () { btn.textContent = 'COPY'; }, 1800); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallback(text); done(); });
+      } else { fallback(text); done(); }
+    });
+  });
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+</script>
+</body>
+</html>
