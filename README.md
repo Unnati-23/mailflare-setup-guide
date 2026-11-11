@@ -4,6 +4,6 @@ A step-by-step guide to setting up [Mailflare](https://github.com/hieunc229/mail
 
 Live guide: https://unnati-23.github.io/mailflare-setup-guide/
 
-By Unnati Tripathi, CEO & Co-founder, Master Labs · Instagram [@unnati_23](https://www.instagram.com/unnati_23/)
+By Unnati Tripathi, CEO & Co-founder, Master Labs · Instagram [@aiwithunnati](https://www.instagram.com/aiwithunnati/)
 
 © 2026 Unnati Tripathi. All rights reserved.
